@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+
+        <style>
+            html{
+                overflow-x: hidden;
+                margin: 0;
+                padding: 0;
+                -webkit-app-region: drag;
+            }
+            .container{
+                margin: 10vw 10vh;
+                -webkit-app-region: no-drag;
+            }
+            .form-inline{
+                width: 80vw;
+                margin: 0;
+                padding: 0;
+            }
+            .form-inline .form-control{
+                width: calc(80vw - 24px);
+            }
+            .form-control{
+                display: inline;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <form>
+                <div class="form-inline">
+                    <input type="text" id="word" name="search" class="form-control">
+                    <i class="fa fa-search" id="submit" aria-hidden="true"></i>
+                </div>
+            </form>
+        </div>
+        <script>
+            require('./search.js');
+        </script>
+    </body>
+</html>

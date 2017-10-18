@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+        <link rel="stylesheet" href="index.css" type="text/css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+
+        <title>nico player</title>
+
+        <style>
+            .fa{
+                font-size: 10vmin;
+                vertical-align: middle;
+            }
+            webview{
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+          </style>
+
+    </head>
+
+    <body>
+        <webview id="webview" preload="./webview.js">
+        </webview>
+        <div class="container">
+            <div class="row col-h-2">
+                    <div class="col-xs-2 dragable"><i></i></div>
+                    <div class="col-xs-8 active" id="search"><i class="fa fa-search" aria-hidden="true"></i></div>
+                    <div class="col-xs-2 active" id="close"><i class="fa fa-times" aria-hidden="true"></i></div>
+            </div>
+            <div class="row col-h-6">
+                    <div class="col-xs-2 active" id="back"><i class="fa fa-step-backward" aria-hidden="true"></i></div>
+                    <div class="col-xs-8" id="play"><!--<i class="fa fa-play" aria-hidden="true"></i>--></div>
+                    <div class="col-xs-2 active" id="next"><i class="fa fa-step-forward" aria-hidden="true"></i></div>
+            </div>
+            <div class="row col-h-2">
+                    <div class="col-xs-2"><i></i></div>
+                    <div class="col-xs-8"><i></i></div>
+                    <div class="col-xs-2" id="setting"><!--<i class="fa fa-cog" aria-hidden="true"></i>--></div>
+            </div>
+            
+        </div>
+      <!--
+    <h1>Hello World!</h1>
+    We are using node <script>document.write(process.versions.node)</script>,
+    Chrome <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+
+    <div id="root-dom"></div>
+    <div id="root"></div>
+      -->
+    <script>
+//      require("babel-register")({plugins: "transform-react-jsx"});
+//      const React = require("react");
+//      const ReactDOM = require("react-dom");
+//      const MyApp = require("./may-app").default;
+//      const rootDOM = document.getElementById("root-dom");
+//      ReactDOM.render(React.createElement(MyApp), rootDOM);
+//     require("./index.js")
+        require('./renderer.js');
+    </script>
+
+    <!--
+    <script>
+        window.onload = function(){
+            require("babel-register")({plugins: "transform-react-jsx"});
+            require("./index.js")
+        }
+      </script>
+    -->
+  </body>
+</html>

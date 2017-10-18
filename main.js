@@ -1,6 +1,9 @@
+'use strict';
+
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const url = require('url')
+const {ipcMain} = require('electron');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -8,7 +11,11 @@ let win
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600})
+  win = new BrowserWindow({
+    width: 640, 
+    height: 408,
+    frame: false,
+  })
 
   // and load the index.html of the app.
   win.loadURL(url.format({
@@ -27,6 +34,13 @@ function createWindow () {
     // when you should delete the corresponding element.
     win = null
   })
+
+  //検索結果をレンダーに渡す
+  ipcMain.on('sendMessage', (event, arg) => {
+    win.webContents.send('sendSearch', arg);
+    console.log(arg);
+  })
+  
 }
 
 // This method will be called when Electron has finished
@@ -50,6 +64,5 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
