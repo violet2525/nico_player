@@ -9,7 +9,12 @@ const {ipcMain} = require('electron');
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+
 function createWindow () {
+  process.on('uncaughtException', function (error) {
+    console.error(error);
+  });
+  
   // Create the browser window.
   win = new BrowserWindow({
     width: 640, 
@@ -41,6 +46,20 @@ function createWindow () {
     console.log(arg);
   })
   
+  //検索結果をクリック
+  ipcMain.on('result_click', (event, arg) => {
+    //console.log(arg);
+    win.webContents.send('result_send', arg);
+  });
+  //パート1から再生をクリック
+  ipcMain.on('first_click', (e, g) =>{
+    win.webContents.send('first_send', g);
+//    console.log(g);
+  });
+
+  ipcMain.on('console_log', (e, g) =>{
+    console.log(g);
+  });
 }
 
 // This method will be called when Electron has finished
@@ -64,5 +83,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

@@ -10,9 +10,17 @@
                 padding: 0;
                 -webkit-app-region: drag;
             }
+            body{
+                padding-top: 100px;
+            }
             .container{
-                margin: 10vw 10vh;
                 -webkit-app-region: no-drag;
+            }
+            .navbar{
+                -webkit-app-region: no-drag;
+            }
+            .navbar-header{
+                margin: 0;
             }
             .form-inline{
                 width: 80vw;
@@ -25,17 +33,31 @@
             .form-control{
                 display: inline;
             }
+            .navbar-nav{
+                margin: 0 auto;
+                display: table;
+                table-layout: fixed;
+                float:none;
+            }
         </style>
     </head>
 
     <body>
-        <div class="container">
-            <form>
-                <div class="form-inline">
-                    <input type="text" id="word" name="search" class="form-control">
-                    <i class="fa fa-search" id="submit" aria-hidden="true"></i>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                    <div class="navbar-header" style="margin: 0 10px;">            
+                        <form class="navbar-form" id="searchForm">
+                            <div class="form-inline">
+                                <input type="text" id="word" name="search" class="form-control">
+                                <i class="fa fa-search" id="submit" aria-hidden="true"></i>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+        </nav>
+        <div class="container">
+            <div class="row" id="result">
+            </div>
         </div>
         <script>
             require('./search.js');

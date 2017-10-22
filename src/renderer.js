@@ -1,11 +1,12 @@
-'use strict';
 (function(){
+    'use strict';
     const {ipcRenderer} = require('electron');
     const {remote} = require('electron');
     const path = require('path');
 
     const adJson = require('../IGNORE/adress.json');
-
+    const request = require('request');
+    
     const icon = {
         close: document.getElementById('close'),
         back: document.getElementById('back'),
@@ -22,6 +23,7 @@
         history: 'http://www.nicovideo.jp/api/videoviewhistory/list',
         login: 'https://secure.nicovideo.jp/secure/login',
         video: 'http://nico.ms/',
+        mylist: 'http://www.nicovideo.jp/my/mylist',
     };
     
     //閉じる
@@ -39,102 +41,81 @@
             height: winSize[1] * 0.8,
             parent: win,
             show: false,
-            //frame: false,
+            frame: false,
         })
-        subWindow.loadURL(path.join(__dirname, './search.html'));
+        subWindow.openDevTools();
+        subWindow.loadURL(path.join(__dirname, 'search.html'));
+        subWindow.webContents.send('search_send');
         subWindow.showInactive();
     }, false);
 
-    window.onload = function(){
-        //ログイン
-        login(adJson.address, adJson.password)
-        .then(function(data){
-            getHistory(data)
-            .then(function(data){
-                wv.src = nico.video + data;
-            })
-        });
-    }
+    //前の動画
+    icon.back.addEventListener('click', function(){
+        wv.goBack();
+    });
+
+    //次の動画
+    icon.next.addEventListener('click', function(){
+        wv.send('next_send');
+        //document.getElementsByClassName('PlayerSkipNextButton')[0].click();
+    });
+
+    window.addEventListener('DOMContentLoaded', function(){
+    })
 
     wv.addEventListener('dom-ready', function(){
         wv.openDevTools()
         wv.send('webview_load', [localStorage.getItem('history'), localStorage.getItem('session')]);
     })
 
-    wv.addEventListener('did-frame-finish-load', function(){
-
+    wv.addEventListener('load-commit', function(){
+//        console.log('load-commit');
     })
     
-    //ログイン処理
-    let login = function(mail, pass){
-        return new Promise(function(resolve, reject){
-            var request= require('request');
-            request.post({
-            url: nico.login,
-            form: {
-                mail_tel: mail,
-                password: pass,
-            },
-            },function(error,response){
-            //if(error!=null){
-            //    throw reject(error)
-            //};
-            
-            var session= null;
-            var cookies= response.headers['set-cookie'] || [];
-            for(var i=0; i<cookies.length; i++){
-                var cookie= cookies[i];
-                if(cookie.match(/^user_session=user_session/)){
-                session= cookie.slice(0,cookie.indexOf(';')+1);
-                }
+    wv.addEventListener('did-get-response-details', (details) => {
+        if(details.requestMethod === 'GET' && details.newURL.indexOf('.nicovideo.jp/smile?m=') >= 0 && details.newURL.indexOf('&sb=1') >= 0){
+            //console.log(details.httpResponseCode);                
+            if(parseInt(details.httpResponseCode) === 403){
+                //wv.reload();
+                //console.log(details);
+                request({
+                    url: nico.mylist,
+                    headers: {
+                    Cookie: localStorage.getItem('session'),
+                    },
+                }, function(err, data){
+                    //const re = /\sNicoAPI\.token = "([0-9]+-[0-9]+-[0-9a-z]+)"/gi
+                    //let ma = re.exec(data.body)[1];
+                    //const test = nico.video + wv.src.replace(/.*(sm[0-9]+).*/gi, '$1') + '?playlist_token=' + ma.replace(/-/g, '_');
+                    //console.log(test);
+                    //wv.src = test;
+                })
+        
             }
-            
-            console.log(response.headers['set-cookie']);
-            console.log(session);
-            document.cookie = session;
-            resolve(session);
-            });        
-        });
-    }
+        }
+    });
 
-    //視聴履歴
-    let getHistory = function(session){
-        return new Promise(function(resolve, reject){
-            let request = require('request');
-            request({
-                url: nico.history,
-                headers: {
-                Cookie: session,
-                },
-            },function(error,response){
-                if(error!=null) throw reject(error);
-                //console.log(response.body);
-                let his = JSON.parse(response.body);
-                console.log(his.history[0]);
-                const ss = session.replace('user_session_4443337_', '');
-                resolve(his.history[0].item_id);            
-                request({url: nico.video + his.history[0].item_id, headers: {Cookie: session}},
-                    function(err, res){
-                        console.log(res);
-                        const aryHead = res.headers['set-cookie']
-                        let nhis = '';
-                        for (let i=0;i < aryHead.length;i++){
-                            if(aryHead[i].match(/^nicohistory=.*?;/)){
-                                nhis= aryHead[i].match(/^nicohistory=.*?;/)[0];
-                            }
-                        }
-                        localStorage.setItem('history', nhis);
-                        localStorage.setItem('session', session);
-                    }
-                )
-                
-            })
-        });
-    }
+    let searchResult = (linkURL) => {
+        wv.src = linkURL;
+    };
+
+    let firstResult = (partURL) => {
+        wv.send('first_result', partURL);
+    };
+
+    wv.addEventListener('ipc-message', (ev) => {
+        console.log('ipc message');
+    })
 
 
-    //検索結果取得
-    ipcRenderer.on('sendSearch', function(event, arg){
+    //検索結果からジャンプ
+    ipcRenderer.on('result_send', (event, arg) => {
         console.log(arg);
+        searchResult(arg);
+    });
+    //パート1から再生
+    ipcRenderer.on('first_send', (event, arg) => {
+        console.log(arg);
+        firstResult(arg);
     });
 })();
