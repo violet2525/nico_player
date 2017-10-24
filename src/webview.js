@@ -120,7 +120,7 @@
                 const dis = dom.getElementsByTagName('description')[0];
                 let myListId = null;
                 if(dis !== undefined){
-                    myListId = /mylist\/[0-9]+/gi.exec(dis.innerHTML)[0];
+                    myListId = /mylist\/[0-9]+/.exec(dis.innerHTML)[0];
                 }
                 console.log(myListId);
                 resolve(myListId);
